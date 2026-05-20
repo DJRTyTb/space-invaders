@@ -3,46 +3,54 @@ import {
   init,
   update,
   draw
-} from './game'
+} from './game';
 
 const canvas = document.getElementById("cnvs");
+
 canvas.width = 600;
 canvas.height = window.innerHeight;
 
-const tickLength = 15; //ms
+const tickLength = 15;
+
 let lastTick;
 let lastRender;
 let stopCycle;
 
 function run(tFrame) {
-    stopCycle = window.requestAnimationFrame(run);
+  stopCycle = window.requestAnimationFrame(run);
 
-    const nextTick = lastTick + tickLength;
-    let numTicks = 0;
+  const nextTick = lastTick + tickLength;
 
-    if (tFrame > nextTick) {
-        const timeSinceTick = tFrame - lastTick;
-        numTicks = Math.floor(timeSinceTick / tickLength);
-    }
+  let numTicks = 0;
 
-    for (let i = 0; i < numTicks; i++) {
-        lastTick = lastTick + tickLength;
-        update(lastTick, stopGame);
-    }
+  if (tFrame > nextTick) {
+    const timeSinceTick = tFrame - lastTick;
 
-    draw(canvas, tFrame);
-    lastRender = tFrame;
+    numTicks = Math.floor(timeSinceTick / tickLength);
+  }
+
+  for (let i = 0; i < numTicks; i++) {
+    lastTick = lastTick + tickLength;
+
+    update(lastTick, stopGame, canvas);
+  }
+
+  draw(canvas, tFrame);
+
+  lastRender = tFrame;
 }
 
 function stopGame() {
-    window.cancelAnimationFrame(stopCycle);
+  window.cancelAnimationFrame(stopCycle);
 }
 
 function onPreloadComplete() {
   lastTick = performance.now();
   lastRender = lastTick;
   stopCycle = null;
+
   init(canvas);
+
   run();
 }
 
